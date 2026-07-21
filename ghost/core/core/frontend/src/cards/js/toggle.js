@@ -2,13 +2,21 @@
     const toggleHeadingElements = document.getElementsByClassName("kg-toggle-heading");
 
     const toggleFn = function(event) {
-        const targetElement = event.target;
-        const parentElement = targetElement.closest('.kg-toggle-card');
-        var toggleState = parentElement.getAttribute("data-kg-toggle-state");
-        if (toggleState === 'close') {
-            parentElement.setAttribute('data-kg-toggle-state', 'open');
-        } else {
-            parentElement.setAttribute('data-kg-toggle-state', 'close');
+        const button = event.currentTarget;
+        const parentElement = button.closest('.kg-toggle-card');
+        if (!parentElement) {
+            return;
+        }
+
+        const contentElement = parentElement.querySelector('.kg-toggle-content');
+        const toggleState = parentElement.getAttribute("data-kg-toggle-state");
+        const isOpening = toggleState === 'close';
+
+        parentElement.setAttribute('data-kg-toggle-state', isOpening ? 'open' : 'close');
+        button.setAttribute('aria-expanded', isOpening ? 'true' : 'false');
+
+        if (contentElement) {
+            contentElement.setAttribute('aria-hidden', isOpening ? 'false' : 'true');
         }
     };
 

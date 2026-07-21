@@ -1194,6 +1194,14 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
+    gap: 1em;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
 }
 
 .gh-whats-new .kg-toggle-card h4.kg-toggle-heading-text {
@@ -1204,6 +1212,11 @@
     margin-bottom: 0;
     text-transform: none;
     color: inherit;
+}
+
+.gh-whats-new .kg-toggle-heading-label {
+    flex: 1;
+    min-width: 0;
 }
 
 .gh-whats-new .kg-toggle-content p:first-of-type {
@@ -1228,7 +1241,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-left: 1em;
+    flex-shrink: 0;
+    padding: 0;
     background: none;
     border: 0;
 }
