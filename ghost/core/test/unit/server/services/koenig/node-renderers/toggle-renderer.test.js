@@ -24,23 +24,48 @@ describe('services/koenig/node-renderers/toggle-renderer', function () {
 
             assert.ok(result.html);
 
-            assertPrettifiesTo(result.html, html`
+            // Normalize generated ids so the snapshot stays stable
+            const normalizedHtml = result.html
+                .replace(/id="kg-toggle-\d+"/g, 'id="kg-toggle-ID"')
+                .replace(/aria-controls="kg-toggle-\d+"/g, 'aria-controls="kg-toggle-ID"');
+
+            assertPrettifiesTo(normalizedHtml, html`
                 <div class="kg-card kg-toggle-card" data-kg-toggle-state="close">
-                    <div class="kg-toggle-heading">
-                        <h4 class="kg-toggle-heading-text">Toggle Heading</h4>
+                    <h4 class="kg-toggle-heading-text">
                         <button
-                            class="kg-toggle-card-icon"
-                            aria-label="Expand toggle to read content">
-                            <svg id="Regular" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                <path
-                                    class="cls-1"
-                                    d="M23.25,7.311,12.53,18.03a.749.749,0,0,1-1.06,0L.75,7.311"></path>
-                            </svg>
+                            class="kg-toggle-heading"
+                            type="button"
+                            aria-expanded="false"
+                            aria-controls="kg-toggle-ID"
+                        >
+                            <span class="kg-toggle-heading-label">Toggle Heading</span>
+                            <span class="kg-toggle-card-icon" aria-hidden="true">
+                                <svg id="Regular" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                    <path
+                                        class="cls-1"
+                                        d="M23.25,7.311,12.53,18.03a.749.749,0,0,1-1.06,0L.75,7.311"></path>
+                                </svg>
+                            </span>
                         </button>
-                    </div>
-                    <div class="kg-toggle-content">Collapsible content</div>
+                    </h4>
+                    <div class="kg-toggle-content" id="kg-toggle-ID" aria-hidden="true">Collapsible content</div>
                 </div>
             `);
+        });
+
+        it('exposes heading text as the button accessible name', function () {
+            const result = renderForWeb(getTestData({heading: 'FAQ about billing'}));
+            const button = result.element.querySelector('button.kg-toggle-heading');
+            const label = result.element.querySelector('.kg-toggle-heading-label');
+            const content = result.element.querySelector('.kg-toggle-content');
+
+            assert.equal(button.getAttribute('aria-expanded'), 'false');
+            assert.equal(button.getAttribute('aria-controls'), content.id);
+            assert.equal(label.textContent, 'FAQ about billing');
+            assert.equal(content.getAttribute('aria-hidden'), 'true');
+            assert.equal(button.querySelector('.kg-toggle-card-icon').getAttribute('aria-hidden'), 'true');
+            // Generic aria-label must not override the heading text
+            assert.equal(button.hasAttribute('aria-label'), false);
         });
     });
 

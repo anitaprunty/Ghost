@@ -1,19 +1,33 @@
 const {addCreateDocumentOption} = require('../render-utils/add-create-document-option');
 const {html} = require('../render-utils/tagged-template-fns.js');
 
-function cardTemplate({node}) {
+let toggleIdCounter = 0;
+
+function nextToggleId() {
+    toggleIdCounter += 1;
+    return `kg-toggle-${toggleIdCounter}`;
+}
+
+function cardTemplate({node, contentId}) {
     return (
         `
         <div class="kg-card kg-toggle-card" data-kg-toggle-state="close">
-            <div class="kg-toggle-heading">
-                <h4 class="kg-toggle-heading-text">${node.heading}</h4>
-                <button class="kg-toggle-card-icon" aria-label="Expand toggle to read content">
-                    <svg id="Regular" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <path class="cls-1" d="M23.25,7.311,12.53,18.03a.749.749,0,0,1-1.06,0L.75,7.311"></path>
-                    </svg>
+            <h4 class="kg-toggle-heading-text">
+                <button
+                    class="kg-toggle-heading"
+                    type="button"
+                    aria-expanded="false"
+                    aria-controls="${contentId}"
+                >
+                    <span class="kg-toggle-heading-label">${node.heading}</span>
+                    <span class="kg-toggle-card-icon" aria-hidden="true">
+                        <svg id="Regular" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path class="cls-1" d="M23.25,7.311,12.53,18.03a.749.749,0,0,1-1.06,0L.75,7.311"></path>
+                        </svg>
+                    </span>
                 </button>
-            </div>
-            <div class="kg-toggle-content">${node.content}</div>
+            </h4>
+            <div class="kg-toggle-content" id="${contentId}" aria-hidden="true">${node.content}</div>
         </div>
         `
     );
@@ -47,7 +61,7 @@ function renderToggleNode(node, options = {}) {
 
     const htmlString = options.target === 'email'
         ? emailCardTemplate({node}, options)
-        : cardTemplate({node});
+        : cardTemplate({node, contentId: nextToggleId()});
 
     const container = document.createElement('div');
     container.innerHTML = htmlString.trim();
